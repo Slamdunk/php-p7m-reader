@@ -10,5 +10,11 @@ parameters:
         - tests/
     ignoreErrors:
         -
+            message: '#Function \w+ is unsafe to use, rely on .+ instead#'
+            path: %currentWorkingDirectory%/lib/P7MReader.php
+        -
+            message: '#Parameter .+ expects string, string\|false given#'
+            path: %currentWorkingDirectory%/lib/P7MReader.php
+        -
             message: '#Function copy is unsafe to use, rely on Symfony component Filesystem::copy instead#'
             path: %currentWorkingDirectory%/tests/P7MReaderTest.php

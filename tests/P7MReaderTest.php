@@ -41,10 +41,10 @@ final class P7MReaderTest extends TestCase
 
     public function testWorkingSample()
     {
-        $p7mReader = new P7MReader($this->p7mToWorkOn);
+        $p7mReader = new P7MReader($this->p7mToWorkOn, __DIR__ . '/TempOutput');
 
         static::assertFileEquals($this->referenceP7m->getPathname(), $p7mReader->getP7mFile()->getPathname());
-        static::assertFileEquals($this->referenceXmlOutput->getPathname(), $p7mReader->getOriginalFile()->getPathname());
+        static::assertFileEquals($this->referenceXmlOutput->getPathname(), $p7mReader->getContentFile()->getPathname());
         static::assertFileEquals($this->referenceCrtOutput->getPathname(), $p7mReader->getCertFile()->getPathname());
         static::assertArrayHasKey('subject', $p7mReader->getCertData());
     }

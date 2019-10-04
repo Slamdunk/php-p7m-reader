@@ -5,15 +5,9 @@ declare(strict_types=1);
 namespace Slam\P7MReader;
 
 use SplFileObject;
-use Symfony\Component\Process\Process;
 
 final class P7MReader
 {
-    /**
-     * @var string
-     */
-    private $bin;
-
     /**
      * @var SplFileObject
      */
@@ -22,58 +16,47 @@ final class P7MReader
     /**
      * @var SplFileObject
      */
-    private $originalFile;
+    private $contentFile;
 
     /**
      * @var SplFileObject
      */
     private $certFile;
 
-    public function __construct(SplFileObject $p7m)
+    public function __construct(SplFileObject $p7m, string $tmpFolder = null)
     {
-        $process = Process::fromShellCommandline('command -v openssl');
-        $process->mustRun();
+        $this->p7m   = $p7m;
+        $tmpFolder   = $tmpFolder ?? \sys_get_temp_dir();
+        $p7mFilename = $this->p7m->getPathname();
 
-        $this->bin =  \trim($process->getOutput());
-        $this->p7m = $p7m;
+        $p7mContentForSmime = \file_get_contents($p7mFilename);
+        $p7mContentForSmime = \base64_encode($p7mContentForSmime);
+        $p7mContentForSmime = \chunk_split($p7mContentForSmime, 76, \PHP_EOL);
 
-        $originalFile = \substr($this->p7m->getPathname(), 0, -4);
+        $smimeFilename = \tempnam($tmpFolder, $p7mFilename . '.smime');
+        \file_put_contents($smimeFilename, \sprintf(<<<'EOF'
+MIME-Version: 1.0
+Content-Disposition: attachment; filename="smime.p7m"
+Content-Type: application/x-pkcs7-mime; smime-type=signed-data;name="smime.p7m"
+Content-Transfer-Encoding: base64
 
-        // Verify p7m
-        $process = Process::fromShellCommandline(
-            \sprintf('%s cms -verify -out /dev/null -inform DER -noverify -in %s 2>&1',
-                $this->bin,
-                \escapeshellarg($this->p7m->getPathname())
-            )
-        );
-        $process->mustRun();
+%s
+EOF
+, $p7mContentForSmime));
 
-        // Decode p7m
-        $process = Process::fromShellCommandline(
-            \sprintf('%s smime -verify -inform DER -in %s -noverify -out %s',
-                $this->bin,
-                \escapeshellarg($this->p7m->getPathname()),
-                \escapeshellarg($originalFile)
-            )
-        );
-        $process->mustRun();
+        $contentFilename = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4));
+        $crtFilename     = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4) . '.crt');
 
-        $this->originalFile = new SplFileObject($originalFile);
+        if (true !== \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY | \PKCS7_NOSIGS, $crtFilename)) {
+            throw new P7MReaderException(\openssl_error_string());
+        }
 
-        $certFile   = $this->p7m->getPathname() . '.crt';
+        if (true !== \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY | \PKCS7_NOSIGS, $crtFilename, [], $crtFilename, $contentFilename)) {
+            throw new P7MReaderException(\openssl_error_string());
+        }
 
-        // Save cert
-        $process = Process::fromShellCommandline(
-            \sprintf(
-                '%s pkcs7 -inform DER -print_certs -in %s -out %s',
-                $this->bin,
-                \escapeshellarg($this->p7m->getPathname()),
-                \escapeshellarg($certFile)
-            )
-        );
-        $process->mustRun();
-
-        $this->certFile = new SplFileObject($certFile);
+        $this->contentFile  = new SplFileObject($contentFilename);
+        $this->certFile     = new SplFileObject($crtFilename);
     }
 
     public function getP7mFile(): SplFileObject
@@ -81,9 +64,9 @@ final class P7MReader
         return $this->p7m;
     }
 
-    public function getOriginalFile(): SplFileObject
+    public function getContentFile(): SplFileObject
     {
-        return $this->originalFile;
+        return $this->contentFile;
     }
 
     public function getCertFile(): SplFileObject
