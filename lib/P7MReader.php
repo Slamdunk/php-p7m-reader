@@ -6,7 +6,7 @@ namespace Slam\P7MReader;
 
 use SplFileObject;
 
-final class P7MReader
+final class P7MReader implements P7MReaderInterface
 {
     /**
      * @var SplFileObject
