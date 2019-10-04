@@ -8,4 +8,23 @@
 
 `composer require slam/php-php-p7m-reader`
 
+## Requirements
+
+1. PHP ^7.1
+1. `ext-openssl`
+
 ## Usage
+
+*WARNING*: the signature is not verified, this library only extracts the content and the certificate.
+
+```php
+$p7mReader = new \Slam\P7MReader\P7MReader(
+    new \SplFileObject('/path/to/my.xml.p7m',
+    __DIR__ . '/tmp' # Optional custom temporary directory
+);
+
+var_dump($p7mReader->getP7mFile()->getPathname());      # The original P7M
+var_dump($p7mReader->getContentFile()->getPathname());  # The signed content
+var_dump($p7mReader->getCertFile()->getPathname());     # The certificate
+var_dump($p7mReader->getCertData());                    # Certificate data in openssl_x509_parse output format
+```
