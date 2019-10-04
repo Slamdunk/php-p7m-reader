@@ -1,0 +1,37 @@
+{
+    "name": "slam/php-p7m-reader",
+    "description": "P7M Reader",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Filippo Tessarotto",
+            "email": "zoeslam@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "ext-openssl": "*",
+        "symfony/process": "^4.3"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.11",
+        "phpstan/phpstan-phpunit": "^0.11",
+        "phpunit/phpunit": "^7.5",
+        "roave/security-advisories": "dev-master",
+        "slam/php-cs-fixer-extensions": "^1.18",
+        "slam/php-debug-r": "^1.6",
+        "slam/phpstan-extensions": "^3.6",
+        "thecodingmachine/phpstan-strict-rules": "^0.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "Slam\\P7MReader\\": "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Slam\\P7MReader\\Tests\\": "tests/"
+        }
+    }
+}

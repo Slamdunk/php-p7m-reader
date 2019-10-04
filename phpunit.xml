@@ -1,0 +1,16 @@
+<phpunit
+    bootstrap="./vendor/autoload.php"
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    colors="true"
+>
+    <testsuite name="Excel">
+        <directory>./tests</directory>
+    </testsuite>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./lib</directory>
+        </whitelist>
+    </filter>
+</phpunit>
