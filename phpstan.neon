@@ -1,0 +1,14 @@
+includes:
+    - vendor/phpstan/phpstan/conf/config.levelmax.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/slam/phpstan-extensions/conf/slam-rules.neon
+    - vendor/slam/phpstan-extensions/conf/thecodingmachine-rules.neon
+
+parameters:
+    paths:
+        - lib/
+        - tests/
+    ignoreErrors:
+        -
+            message: '#Function copy is unsafe to use, rely on Symfony component Filesystem::copy instead#'
+            path: %currentWorkingDirectory%/tests/P7MReaderTest.php

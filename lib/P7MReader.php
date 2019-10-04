@@ -110,6 +110,6 @@ final class P7MReader
 
     public function getCertData(): array
     {
-        return \openssl_x509_parse(\file_get_contents($this->certFile->getPathname()));
+        return (array) \openssl_x509_parse((string) \file_get_contents($this->certFile->getPathname()));
     }
 }
