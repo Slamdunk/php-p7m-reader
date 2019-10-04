@@ -20,11 +20,11 @@
 ```php
 $p7mReader = new \Slam\P7MReader\P7MReader(
     new \SplFileObject('/path/to/my.xml.p7m',
-    __DIR__ . '/tmp' # Optional custom temporary directory
+    __DIR__ . '/tmp' // Optional custom temporary directory, defaults to sys_get_temp_dir()
 );
 
-var_dump($p7mReader->getP7mFile()->getPathname());      # The original P7M
-var_dump($p7mReader->getContentFile()->getPathname());  # The signed content
-var_dump($p7mReader->getCertFile()->getPathname());     # The certificate
-var_dump($p7mReader->getCertData());                    # Certificate data in openssl_x509_parse output format
+var_dump($p7mReader->getP7mFile()->getPathname());      // The original P7M
+var_dump($p7mReader->getContentFile()->getPathname());  // The signed content
+var_dump($p7mReader->getCertFile()->getPathname());     // The certificate
+var_dump($p7mReader->getCertData());                    // Certificate data in openssl_x509_parse output format
 ```
