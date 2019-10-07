@@ -15,7 +15,7 @@
 
 ## Usage
 
-*WARNING*: the signature is not verified, this library only extracts the content and the certificate.
+*WARNING*: the signature is verified, but the validity of the certificate it is not!
 
 ```php
 $p7mReader = \Slam\P7MReader\P7MReader::decode(

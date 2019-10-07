@@ -6,6 +6,7 @@ namespace Slam\P7MReader\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Slam\P7MReader\P7MReader;
+use Slam\P7MReader\P7MReaderException;
 use SplFileObject;
 
 final class P7MReaderTest extends TestCase
@@ -29,11 +30,11 @@ final class P7MReaderTest extends TestCase
 
     protected function setUp()
     {
-        $this->referenceP7m       = new SplFileObject(__DIR__ . '/TestAssets/sample.xml.p7m');
-        $this->referenceXmlOutput = new SplFileObject(__DIR__ . '/TestAssets/sample.xml');
-        $this->referenceCrtOutput = new SplFileObject(__DIR__ . '/TestAssets/sample.crt');
+        $this->referenceP7m       = new SplFileObject(__DIR__ . '/TestAssets/OK.xml.p7m');
+        $this->referenceXmlOutput = new SplFileObject(__DIR__ . '/TestAssets/OK.xml');
+        $this->referenceCrtOutput = new SplFileObject(__DIR__ . '/TestAssets/OK.crt');
 
-        $draftP7m = __DIR__ . '/TempOutput/sample.xml.p7m';
+        $draftP7m = __DIR__ . '/TempOutput/OK.xml.p7m';
         \copy($this->referenceP7m->getPathname(), $draftP7m);
 
         $this->p7mToWorkOn = new SplFileObject($draftP7m);
@@ -47,5 +48,15 @@ final class P7MReaderTest extends TestCase
         static::assertFileEquals($this->referenceXmlOutput->getPathname(), $p7mReader->getContentFile()->getPathname());
         static::assertFileEquals($this->referenceCrtOutput->getPathname(), $p7mReader->getCertFile()->getPathname());
         static::assertArrayHasKey('subject', $p7mReader->getCertData());
+    }
+
+    public function testTamperedSample()
+    {
+        $tamperedFile = new SplFileObject(__DIR__ . '/TestAssets/TAMPERED.xml.p7m');
+
+        static::expectException(P7MReaderException::class);
+        static::expectExceptionMessage('asn1 parse error');
+
+        P7MReader::decode($tamperedFile, __DIR__ . '/TempOutput');
     }
 }

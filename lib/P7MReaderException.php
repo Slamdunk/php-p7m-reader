@@ -8,4 +8,18 @@ use RuntimeException;
 
 final class P7MReaderException extends RuntimeException
 {
+    public static function fromReturnValue($returnValue): self
+    {
+        $opensslErrors = [];
+        while ($message = \openssl_error_string()) {
+            $opensslErrors[] = $message;
+        }
+
+        return new self(\sprintf('openssl_pkcs7_verify return value: %s%sOpenSSL Errors:%s- %s',
+            \var_export($returnValue, true),
+            \PHP_EOL,
+            \PHP_EOL,
+            \implode(\PHP_EOL . '- ', $opensslErrors)
+        ));
+    }
 }

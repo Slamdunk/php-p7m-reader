@@ -30,6 +30,9 @@ final class P7MReader implements P7MReaderInterface
         $this->certFile    = $certFile;
     }
 
+    /**
+     * @throws P7MReaderException
+     */
     public static function decode(SplFileObject $p7m, string $tmpFolder = null): self
     {
         $tmpFolder   = $tmpFolder ?? \sys_get_temp_dir();
@@ -53,12 +56,12 @@ EOF
         $contentFilename = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4));
         $crtFilename     = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4) . '.crt');
 
-        if (true !== \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY | \PKCS7_NOSIGS, $crtFilename)) {
-            throw new P7MReaderException(\openssl_error_string());
+        if (true !== ($returnValue = \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY, $crtFilename))) {
+            throw P7MReaderException::fromReturnValue($returnValue);
         }
 
-        if (true !== \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY | \PKCS7_NOSIGS, $crtFilename, [], $crtFilename, $contentFilename)) {
-            throw new P7MReaderException(\openssl_error_string());
+        if (true !== ($returnValue = \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY, $crtFilename, [], $crtFilename, $contentFilename))) {
+            throw P7MReaderException::fromReturnValue($returnValue);
         }
 
         return new self($p7m, new SplFileObject($contentFilename), new SplFileObject($crtFilename));
