@@ -41,6 +41,9 @@ final class P7MReader implements P7MReaderInterface
         return self::decodeFromBase64($p7mContentBase64, $p7m->getBasename(), $tmpFolder);
     }
 
+    /**
+     * @throws P7MReaderException
+     */
     public static function decodeFromBase64(string $p7mBase64Content, string $p7mFilename, string $tmpFolder = null): P7MReaderInterface
     {
         $tmpFolder          = $tmpFolder ?? \sys_get_temp_dir();
