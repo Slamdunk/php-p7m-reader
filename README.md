@@ -25,12 +25,12 @@ $p7mReader = \Slam\P7MReader\P7MReader::decodeFromFile(
 // OR
 $p7mReader = \Slam\P7MReader\P7MReader::decodeFromBase64(
     'Abc==',            // base64 encoded content file
-    'my.xml.p7m',       // Filename
+    'my.xml.p7m',       // File basename, useful to retain original file extension
     __DIR__ . '/tmp'    // Optional custom temporary directory, defaults to sys_get_temp_dir()
 );
 
-var_dump($p7mReader->getP7mFile());     // SplFileObject: The original P7M
-var_dump($p7mReader->getContentFile()); // SplFileObject: The signed content
-var_dump($p7mReader->getCertFile());    // SplFileObject: The certificate
-var_dump($p7mReader->getCertData());    // array:         Certificate data in openssl_x509_parse output format
+var_dump($p7mReader->getP7mBase64Content());    // string:        The original P7M base64 content
+var_dump($p7mReader->getContentFile());         // SplFileObject: The signed content
+var_dump($p7mReader->getCertFile());            // SplFileObject: The certificate
+var_dump($p7mReader->getCertData());            // array:         Certificate data in openssl_x509_parse output format
 ```
