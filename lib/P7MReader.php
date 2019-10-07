@@ -9,9 +9,9 @@ use SplFileObject;
 final class P7MReader implements P7MReaderInterface
 {
     /**
-     * @var SplFileObject
+     * @var string
      */
-    private $p7m;
+    private $p7mBase64Content;
 
     /**
      * @var SplFileObject
@@ -23,26 +23,30 @@ final class P7MReader implements P7MReaderInterface
      */
     private $certFile;
 
-    private function __construct(SplFileObject $p7m, SplFileObject $contentFile, SplFileObject $certFile)
+    private function __construct(string $p7mBase64Content, SplFileObject $contentFile, SplFileObject $certFile)
     {
-        $this->p7m         = $p7m;
-        $this->contentFile = $contentFile;
-        $this->certFile    = $certFile;
+        $this->p7mBase64Content = $p7mBase64Content;
+        $this->contentFile      = $contentFile;
+        $this->certFile         = $certFile;
     }
 
     /**
      * @throws P7MReaderException
      */
-    public static function decode(SplFileObject $p7m, string $tmpFolder = null): P7MReaderInterface
+    public static function decodeFromFile(SplFileObject $p7m, string $tmpFolder = null): P7MReaderInterface
     {
-        $tmpFolder   = $tmpFolder ?? \sys_get_temp_dir();
-        $p7mFilename = $p7m->getPathname();
+        $p7mContent       = \file_get_contents($p7m->getPathname());
+        $p7mContentBase64 = \base64_encode($p7mContent);
 
-        $p7mContentForSmime = \file_get_contents($p7mFilename);
-        $p7mContentForSmime = \base64_encode($p7mContentForSmime);
-        $p7mContentForSmime = \chunk_split($p7mContentForSmime, 76, \PHP_EOL);
+        return self::decodeFromBase64($p7mContentBase64, $p7m->getBasename(), $tmpFolder);
+    }
 
-        $smimeFilename = \tempnam($tmpFolder, $p7mFilename . '.smime');
+    public static function decodeFromBase64(string $p7mBase64Content, string $p7mFilename, string $tmpFolder = null): P7MReaderInterface
+    {
+        $tmpFolder          = $tmpFolder ?? \sys_get_temp_dir();
+        $p7mContentForSmime = \chunk_split($p7mBase64Content, 76, \PHP_EOL);
+
+        $smimeFilename = \tempnam($tmpFolder, $p7mFilename . '.smime_');
         \file_put_contents($smimeFilename, \sprintf(<<<'EOF'
 MIME-Version: 1.0
 Content-Disposition: attachment; filename="smime.p7m"
@@ -51,10 +55,11 @@ Content-Transfer-Encoding: base64
 
 %s
 EOF
-, $p7mContentForSmime));
+            , $p7mContentForSmime)
+        );
 
-        $contentFilename = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4));
-        $crtFilename     = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4) . '.crt');
+        $contentFilename = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4) . '_');
+        $crtFilename     = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4) . '.crt_');
 
         if (true !== ($returnValue = \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY, $crtFilename))) {
             throw P7MReaderException::fromReturnValue($returnValue);
@@ -64,12 +69,12 @@ EOF
             throw P7MReaderException::fromReturnValue($returnValue);
         }
 
-        return new self($p7m, new SplFileObject($contentFilename), new SplFileObject($crtFilename));
+        return new self($p7mBase64Content, new SplFileObject($contentFilename), new SplFileObject($crtFilename));
     }
 
-    public function getP7mFile(): SplFileObject
+    public function getP7mBase64Content(): string
     {
-        return $this->p7m;
+        return $this->p7mBase64Content;
     }
 
     public function getContentFile(): SplFileObject

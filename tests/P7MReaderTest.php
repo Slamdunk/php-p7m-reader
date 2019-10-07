@@ -46,9 +46,22 @@ final class P7MReaderTest extends TestCase
 
     public function testWorkingSample()
     {
-        $p7mReader = P7MReader::decode($this->p7mToWorkOn, __DIR__ . '/TempOutput');
+        $p7mReader = P7MReader::decodeFromFile($this->p7mToWorkOn, __DIR__ . '/TempOutput');
 
-        static::assertFileEquals($this->referenceP7m->getPathname(), $p7mReader->getP7mFile()->getPathname());
+        static::assertSame(\base64_encode((string) \file_get_contents($this->referenceP7m->getPathname())), $p7mReader->getP7mBase64Content());
+        static::assertFileEquals($this->referenceXmlOutput->getPathname(), $p7mReader->getContentFile()->getPathname());
+        static::assertFileEquals($this->referenceCrtOutput->getPathname(), $p7mReader->getCertFile()->getPathname());
+        static::assertArrayHasKey('subject', $p7mReader->getCertData());
+    }
+
+    public function testDecodingFromString()
+    {
+        $p7mContent       = (string) \file_get_contents($this->p7mToWorkOn->getPathname());
+        $p7mContentBase64 = \base64_encode($p7mContent);
+
+        $p7mReader = P7MReader::decodeFromBase64($p7mContentBase64, __DIR__ . '/TempOutput');
+
+        static::assertSame($p7mContentBase64, $p7mReader->getP7mBase64Content());
         static::assertFileEquals($this->referenceXmlOutput->getPathname(), $p7mReader->getContentFile()->getPathname());
         static::assertFileEquals($this->referenceCrtOutput->getPathname(), $p7mReader->getCertFile()->getPathname());
         static::assertArrayHasKey('subject', $p7mReader->getCertData());
@@ -61,6 +74,6 @@ final class P7MReaderTest extends TestCase
         static::expectException(P7MReaderException::class);
         static::expectExceptionMessage('asn1 parse error');
 
-        P7MReader::decode($tamperedFile, __DIR__ . '/TempOutput');
+        P7MReader::decodeFromFile($tamperedFile, __DIR__ . '/TempOutput');
     }
 }

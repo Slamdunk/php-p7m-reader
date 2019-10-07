@@ -18,9 +18,15 @@
 *WARNING*: the signature is verified, but the validity of the certificate it is not!
 
 ```php
-$p7mReader = \Slam\P7MReader\P7MReader::decode(
-    new \SplFileObject('/path/to/my.xml.p7m',
-    __DIR__ . '/tmp' // Optional custom temporary directory, defaults to sys_get_temp_dir()
+$p7mReader = \Slam\P7MReader\P7MReader::decodeFromFile(
+    new \SplFileObject('/path/to/my.xml.p7m'),
+    __DIR__ . '/tmp'    // Optional custom temporary directory, defaults to sys_get_temp_dir()
+);
+// OR
+$p7mReader = \Slam\P7MReader\P7MReader::decodeFromBase64(
+    'Abc==',            // base64 encoded content file
+    'my.xml.p7m',       // Filename
+    __DIR__ . '/tmp'    // Optional custom temporary directory, defaults to sys_get_temp_dir()
 );
 
 var_dump($p7mReader->getP7mFile());     // SplFileObject: The original P7M
