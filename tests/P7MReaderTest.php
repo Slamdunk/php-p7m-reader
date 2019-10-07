@@ -71,8 +71,8 @@ final class P7MReaderTest extends TestCase
     {
         $tamperedFile = new SplFileObject(__DIR__ . '/TestAssets/TAMPERED.xml.p7m');
 
-        static::expectException(P7MReaderException::class);
-        static::expectExceptionMessage('asn1 parse error');
+        $this->expectException(P7MReaderException::class);
+        $this->expectExceptionMessage('asn1 parse error');
 
         P7MReader::decodeFromFile($tamperedFile, __DIR__ . '/TempOutput');
     }
