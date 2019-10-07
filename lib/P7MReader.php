@@ -23,11 +23,17 @@ final class P7MReader implements P7MReaderInterface
      */
     private $certFile;
 
-    public function __construct(SplFileObject $p7m, string $tmpFolder = null)
+    private function __construct(SplFileObject $p7m, SplFileObject $contentFile, SplFileObject $certFile)
     {
-        $this->p7m   = $p7m;
+        $this->p7m         = $p7m;
+        $this->contentFile = $contentFile;
+        $this->certFile    = $certFile;
+    }
+
+    public static function decode(SplFileObject $p7m, string $tmpFolder = null): self
+    {
         $tmpFolder   = $tmpFolder ?? \sys_get_temp_dir();
-        $p7mFilename = $this->p7m->getPathname();
+        $p7mFilename = $p7m->getPathname();
 
         $p7mContentForSmime = \file_get_contents($p7mFilename);
         $p7mContentForSmime = \base64_encode($p7mContentForSmime);
@@ -55,8 +61,7 @@ EOF
             throw new P7MReaderException(\openssl_error_string());
         }
 
-        $this->contentFile  = new SplFileObject($contentFilename);
-        $this->certFile     = new SplFileObject($crtFilename);
+        return new self($p7m, new SplFileObject($contentFilename), new SplFileObject($crtFilename));
     }
 
     public function getP7mFile(): SplFileObject

@@ -18,13 +18,13 @@
 *WARNING*: the signature is not verified, this library only extracts the content and the certificate.
 
 ```php
-$p7mReader = new \Slam\P7MReader\P7MReader(
+$p7mReader = \Slam\P7MReader\P7MReader::decode(
     new \SplFileObject('/path/to/my.xml.p7m',
     __DIR__ . '/tmp' // Optional custom temporary directory, defaults to sys_get_temp_dir()
 );
 
-var_dump($p7mReader->getP7mFile()->getPathname());      // The original P7M
-var_dump($p7mReader->getContentFile()->getPathname());  // The signed content
-var_dump($p7mReader->getCertFile()->getPathname());     // The certificate
-var_dump($p7mReader->getCertData());                    // Certificate data in openssl_x509_parse output format
+var_dump($p7mReader->getP7mFile());     // SplFileObject: The original P7M
+var_dump($p7mReader->getContentFile()); // SplFileObject: The signed content
+var_dump($p7mReader->getCertFile());    // SplFileObject: The certificate
+var_dump($p7mReader->getCertData());    // array:         Certificate data in openssl_x509_parse output format
 ```
