@@ -9,6 +9,10 @@ use Slam\P7MReader\P7MReader;
 use Slam\P7MReader\P7MReaderException;
 use SplFileObject;
 
+/**
+ * @covers \Slam\P7MReader\P7MReader
+ * @covers \Slam\P7MReader\P7MReaderException
+ */
 final class P7MReaderTest extends TestCase
 {
     /**

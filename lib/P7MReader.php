@@ -33,7 +33,7 @@ final class P7MReader implements P7MReaderInterface
     /**
      * @throws P7MReaderException
      */
-    public static function decode(SplFileObject $p7m, string $tmpFolder = null): self
+    public static function decode(SplFileObject $p7m, string $tmpFolder = null): P7MReaderInterface
     {
         $tmpFolder   = $tmpFolder ?? \sys_get_temp_dir();
         $p7mFilename = $p7m->getPathname();
