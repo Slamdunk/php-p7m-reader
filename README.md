@@ -6,7 +6,7 @@
 
 ## Installation
 
-`composer require slam/php-php-p7m-reader`
+`composer require slam/php-p7m-reader`
 
 ## Requirements
 
