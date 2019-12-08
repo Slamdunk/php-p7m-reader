@@ -9,7 +9,7 @@ use RuntimeException;
 final class P7MReaderException extends RuntimeException
 {
     /**
-     * @param mixed $returnValue
+     * @param bool|int $returnValue
      */
     public static function fromReturnValue($returnValue): self
     {
