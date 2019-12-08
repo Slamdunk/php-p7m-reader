@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^7.1",
+        "php": "^7.3",
         "ext-openssl": "*"
     },
     "require-dev": {
@@ -18,7 +18,7 @@
         "phpstan/phpstan-phpunit": "^0.12",
         "phpunit/phpunit": "^7.5",
         "roave/security-advisories": "dev-master",
-        "slam/php-cs-fixer-extensions": "^1.18",
+        "slam/php-cs-fixer-extensions": "^1.19",
         "slam/php-debug-r": "^1.6",
         "slam/phpstan-extensions": "^4.0",
         "thecodingmachine/phpstan-strict-rules": "^0.12"
