@@ -33,7 +33,7 @@ final class P7MReader implements P7MReaderInterface
     /**
      * @throws P7MReaderException
      */
-    public static function decodeFromFile(SplFileObject $p7m, string $tmpFolder = null): P7MReaderInterface
+    public static function decodeFromFile(SplFileObject $p7m, ?string $tmpFolder = null): P7MReaderInterface
     {
         $p7mContent       = \file_get_contents($p7m->getPathname());
         $p7mContentBase64 = \base64_encode($p7mContent);
@@ -44,7 +44,7 @@ final class P7MReader implements P7MReaderInterface
     /**
      * @throws P7MReaderException
      */
-    public static function decodeFromBase64(string $p7mBase64Content, string $p7mFilename, string $tmpFolder = null): P7MReaderInterface
+    public static function decodeFromBase64(string $p7mBase64Content, string $p7mFilename, ?string $tmpFolder = null): P7MReaderInterface
     {
         $tmpFolder          = $tmpFolder ?? \sys_get_temp_dir();
         $p7mContentForSmime = \chunk_split($p7mBase64Content, 76, \PHP_EOL);
@@ -90,6 +90,9 @@ EOF
         return $this->certFile;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getCertData(): array
     {
         return (array) \openssl_x509_parse((string) \file_get_contents($this->certFile->getPathname()));
