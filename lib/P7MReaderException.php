@@ -8,6 +8,9 @@ use RuntimeException;
 
 final class P7MReaderException extends RuntimeException
 {
+    /**
+     * @param mixed $returnValue
+     */
     public static function fromReturnValue($returnValue): self
     {
         $opensslErrors = [];
