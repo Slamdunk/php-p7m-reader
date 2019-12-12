@@ -8,7 +8,7 @@ use SplFileObject;
 
 interface P7MReaderInterface
 {
-    public function getP7mBase64Content(): string;
+    public function getP7mFile(): SplFileObject;
 
     public function getContentFile(): SplFileObject;
 

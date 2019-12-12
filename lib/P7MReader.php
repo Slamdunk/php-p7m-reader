@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Slam\P7MReader;
 
 use SplFileObject;
+use Symfony\Component\Process\Process;
 
 final class P7MReader implements P7MReaderInterface
 {
     /**
-     * @var string
+     * @var SplFileObject
      */
-    private $p7mBase64Content;
+    private $p7mFile;
 
     /**
      * @var SplFileObject
@@ -23,11 +24,11 @@ final class P7MReader implements P7MReaderInterface
      */
     private $certFile;
 
-    private function __construct(string $p7mBase64Content, SplFileObject $contentFile, SplFileObject $certFile)
+    private function __construct(SplFileObject $p7mFile, SplFileObject $contentFile, SplFileObject $certFile)
     {
-        $this->p7mBase64Content = $p7mBase64Content;
-        $this->contentFile      = $contentFile;
-        $this->certFile         = $certFile;
+        $this->p7mFile     = $p7mFile;
+        $this->contentFile = $contentFile;
+        $this->certFile    = $certFile;
     }
 
     /**
@@ -35,49 +36,52 @@ final class P7MReader implements P7MReaderInterface
      */
     public static function decodeFromFile(SplFileObject $p7m, ?string $tmpFolder = null): P7MReaderInterface
     {
-        $p7mContent       = \file_get_contents($p7m->getPathname());
-        $p7mContentBase64 = \base64_encode($p7mContent);
+        $tmpFolder = $tmpFolder ?? \sys_get_temp_dir();
 
-        return self::decodeFromBase64($p7mContentBase64, $p7m->getBasename(), $tmpFolder);
+        $contentFilename = \tempnam($tmpFolder, \time() . '_');
+        \assert(false !== $contentFilename);
+
+        $crtFilename = \tempnam($tmpFolder, \time() . '.crt_');
+        \assert(false !== $crtFilename);
+
+        $opensslBinary = \trim(self::exec(['which', 'openssl']));
+        \assert(\is_executable($opensslBinary));
+
+        self::exec([$opensslBinary, 'pkcs7', '-inform', 'DER', '-in', $p7m->getPathname(), '-print_certs', '-out', $crtFilename]);
+        self::exec([$opensslBinary, 'cms', '-verify', '-in', $p7m->getPathname(), '-inform', 'DER', '-noverify', '-signer', $crtFilename, '-out', $contentFilename, '-no_attr_verify']);
+
+        return new self($p7m, new SplFileObject($contentFilename), new SplFileObject($crtFilename));
     }
 
     /**
      * @throws P7MReaderException
      */
-    public static function decodeFromBase64(string $p7mBase64Content, string $p7mFilename, ?string $tmpFolder = null): P7MReaderInterface
+    public static function decodeFromBase64(string $p7mBase64Content, ?string $tmpFolder = null): P7MReaderInterface
     {
-        $tmpFolder          = $tmpFolder ?? \sys_get_temp_dir();
-        $p7mContentForSmime = \chunk_split($p7mBase64Content, 76, \PHP_EOL);
+        $tmpFolder   = $tmpFolder ?? \sys_get_temp_dir();
+        $p7mFilename = \tempnam($tmpFolder, \time() . '.p7m_');
+        \file_put_contents($p7mFilename, \base64_decode($p7mBase64Content, true));
 
-        $smimeFilename = \tempnam($tmpFolder, $p7mFilename . '.smime_');
-        \file_put_contents($smimeFilename, \sprintf(<<<'EOF'
-MIME-Version: 1.0
-Content-Disposition: attachment; filename="smime.p7m"
-Content-Type: application/x-pkcs7-mime; smime-type=signed-data;name="smime.p7m"
-Content-Transfer-Encoding: base64
-
-%s
-EOF
-            , $p7mContentForSmime)
-        );
-
-        $contentFilename = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4) . '_');
-        $crtFilename     = \tempnam($tmpFolder, \substr($p7mFilename, 0, -4) . '.crt_');
-
-        if (true !== ($returnValue = \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY, $crtFilename))) {
-            throw P7MReaderException::fromReturnValue($returnValue);
-        }
-
-        if (true !== ($returnValue = \openssl_pkcs7_verify($smimeFilename, \PKCS7_NOVERIFY, $crtFilename, [], $crtFilename, $contentFilename))) {
-            throw P7MReaderException::fromReturnValue($returnValue);
-        }
-
-        return new self($p7mBase64Content, new SplFileObject($contentFilename), new SplFileObject($crtFilename));
+        return self::decodeFromFile(new SplFileObject($p7mFilename), $tmpFolder);
     }
 
-    public function getP7mBase64Content(): string
+    /**
+     * @param string[] $command
+     */
+    private static function exec(array $command): string
     {
-        return $this->p7mBase64Content;
+        $process = new Process($command);
+        $process->run();
+        if (! $process->isSuccessful()) {
+            throw new P7MReaderException($process->getErrorOutput());
+        }
+
+        return $process->getOutput();
+    }
+
+    public function getP7mFile(): SplFileObject
+    {
+        return $this->p7mFile;
     }
 
     public function getContentFile(): SplFileObject
