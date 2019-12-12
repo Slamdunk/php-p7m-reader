@@ -16,55 +16,61 @@ use SplFileObject;
 final class P7MReaderTest extends TestCase
 {
     /**
-     * @var SplFileObject
+     * @dataProvider provideOkCases
      */
-    private $referenceP7m;
-    /**
-     * @var SplFileObject
-     */
-    private $referenceXmlOutput;
-    /**
-     * @var SplFileObject
-     */
-    private $referenceCrtOutput;
-    /**
-     * @var SplFileObject
-     */
-    private $p7mToWorkOn;
-
-    protected function setUp(): void
+    public function testWorkingSample(SplFileObject $referenceP7m, SplFileObject $referenceXmlOutput, SplFileObject $referenceCrtOutput): void
     {
-        $this->referenceP7m       = new SplFileObject(__DIR__ . '/TestAssets/OK.xml.p7m');
-        $this->referenceXmlOutput = new SplFileObject(__DIR__ . '/TestAssets/OK.xml');
-        $this->referenceCrtOutput = new SplFileObject(__DIR__ . '/TestAssets/OK.crt');
+        $p7mToWorkOn = $this->prepareP7mToWorkOn($referenceP7m);
+        $p7mReader   = P7MReader::decodeFromFile($p7mToWorkOn, __DIR__ . '/TempOutput');
 
-        $draftP7m = __DIR__ . '/TempOutput/OK.xml.p7m';
-        \copy($this->referenceP7m->getPathname(), $draftP7m);
-
-        $this->p7mToWorkOn = new SplFileObject($draftP7m);
-    }
-
-    public function testWorkingSample(): void
-    {
-        $p7mReader = P7MReader::decodeFromFile($this->p7mToWorkOn, __DIR__ . '/TempOutput');
-
-        self::assertSame(\base64_encode((string) \file_get_contents($this->referenceP7m->getPathname())), $p7mReader->getP7mBase64Content());
-        self::assertFileEquals($this->referenceXmlOutput->getPathname(), $p7mReader->getContentFile()->getPathname());
-        self::assertFileEquals($this->referenceCrtOutput->getPathname(), $p7mReader->getCertFile()->getPathname());
+        self::assertFileEquals($referenceP7m->getPathname(), $p7mReader->getP7mFile()->getPathname());
+        self::assertFileEquals($referenceXmlOutput->getPathname(), $p7mReader->getContentFile()->getPathname());
+        self::assertFileEquals($referenceCrtOutput->getPathname(), $p7mReader->getCertFile()->getPathname());
         self::assertArrayHasKey('subject', $p7mReader->getCertData());
     }
 
-    public function testDecodingFromString(): void
+    /**
+     * @dataProvider provideOkCases
+     */
+    public function testDecodingFromString(SplFileObject $referenceP7m, SplFileObject $referenceXmlOutput, SplFileObject $referenceCrtOutput): void
     {
-        $p7mContent       = (string) \file_get_contents($this->p7mToWorkOn->getPathname());
+        $p7mToWorkOn      = $this->prepareP7mToWorkOn($referenceP7m);
+        $p7mContent       = (string) \file_get_contents($p7mToWorkOn->getPathname());
         $p7mContentBase64 = \base64_encode($p7mContent);
 
         $p7mReader = P7MReader::decodeFromBase64($p7mContentBase64, __DIR__ . '/TempOutput');
 
-        self::assertSame($p7mContentBase64, $p7mReader->getP7mBase64Content());
-        self::assertFileEquals($this->referenceXmlOutput->getPathname(), $p7mReader->getContentFile()->getPathname());
-        self::assertFileEquals($this->referenceCrtOutput->getPathname(), $p7mReader->getCertFile()->getPathname());
+        self::assertFileEquals($referenceP7m->getPathname(), $p7mReader->getP7mFile()->getPathname());
+        self::assertFileEquals($referenceXmlOutput->getPathname(), $p7mReader->getContentFile()->getPathname());
+        self::assertFileEquals($referenceCrtOutput->getPathname(), $p7mReader->getCertFile()->getPathname());
         self::assertArrayHasKey('subject', $p7mReader->getCertData());
+    }
+
+    /**
+     * @return SplFileObject[][]
+     */
+    public function provideOkCases(): array
+    {
+        return [
+            'OK.xml.p7m' => [
+                new SplFileObject(__DIR__ . '/TestAssets/OK.xml.p7m'),
+                new SplFileObject(__DIR__ . '/TestAssets/OK.xml'),
+                new SplFileObject(__DIR__ . '/TestAssets/OK.crt'),
+            ],
+            'OK2.xml.p7m' => [
+                new SplFileObject(__DIR__ . '/TestAssets/OK2.xml.p7m'),
+                new SplFileObject(__DIR__ . '/TestAssets/OK2.xml'),
+                new SplFileObject(__DIR__ . '/TestAssets/OK2.crt'),
+            ],
+        ];
+    }
+
+    private function prepareP7mToWorkOn(SplFileObject $referenceP7m): SplFileObject
+    {
+        $draftP7m = \sprintf('%s/TempOutput/%s', __DIR__, $referenceP7m->getBasename());
+        \copy($referenceP7m->getPathname(), $draftP7m);
+
+        return new SplFileObject($draftP7m);
     }
 
     public function testTamperedSample(): void
@@ -72,7 +78,7 @@ final class P7MReaderTest extends TestCase
         $tamperedFile = new SplFileObject(__DIR__ . '/TestAssets/TAMPERED.xml.p7m');
 
         $this->expectException(P7MReaderException::class);
-        $this->expectExceptionMessage('asn1 parse error');
+        $this->expectExceptionMessage('asn1');
 
         P7MReader::decodeFromFile($tamperedFile, __DIR__ . '/TempOutput');
     }
