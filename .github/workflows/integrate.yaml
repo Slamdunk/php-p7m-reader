@@ -101,7 +101,12 @@ jobs:
         run: "composer update --no-interaction --no-progress --ignore-platform-reqs"
 
       - name: "Decrypt assets"
-        run: "( cd tests/ && sh decrypt_assets.sh '$GPG_PASSPHRASE' )"
+        run: |
+          cd tests/
+          sh decrypt_assets.sh
+          cd ..
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: "Run tests"
         timeout-minutes: 3
@@ -143,7 +148,12 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Decrypt assets"
-        run: "( cd tests/ && sh decrypt_assets.sh '$GPG_PASSPHRASE' )"
+        run: |
+          cd tests/
+          sh decrypt_assets.sh
+          cd ..
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: "Run tests"
         timeout-minutes: 3
