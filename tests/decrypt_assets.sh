@@ -15,7 +15,7 @@ fi
 for file in TestAssets/*gpg
 do
     printf "Decrypting $file ... "
-    printf "%s" "$password" | gpg --batch --passphrase-fd 0 "$file"
+    printf "%s" "$password" | gpg --decrypt --batch --passphrase-fd 0 --output "$(printf "%s" "$file" | sed 's/\.gpg$//')" "$file"
     rm "$file"
     printf "done\n"
 done
