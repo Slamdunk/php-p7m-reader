@@ -1,8 +1,9 @@
 # Slam P7M Reader
 
-[![Build Status](https://travis-ci.org/Slamdunk/php-p7m-reader.svg?branch=master)](https://travis-ci.org/Slamdunk/php-p7m-reader)
-[![Code Coverage](https://scrutinizer-ci.com/g/Slamdunk/php-p7m-reader/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Slamdunk/php-p7m-reader/?branch=master)
-[![Packagist](https://img.shields.io/packagist/v/slam/php-p7m-reader.svg)](https://packagist.org/packages/slam/php-p7m-reader)
+[![Latest Stable Version](https://img.shields.io/packagist/v/slam/php-p7m-reader.svg)](https://packagist.org/packages/slam/php-p7m-reader)
+[![Downloads](https://img.shields.io/packagist/dt/slam/php-p7m-reader.svg)](https://packagist.org/packages/slam/php-p7m-reader)
+[![Integrate](https://github.com/Slamdunk/php-p7m-reader/workflows/Integrate/badge.svg?branch=master)](https://github.com/Slamdunk/php-p7m-reader/actions)
+[![Code Coverage](https://codecov.io/gh/Slamdunk/php-p7m-reader/coverage.svg?branch=master)](https://codecov.io/gh/Slamdunk/php-p7m-reader?branch=master)
 
 ## Installation
 
@@ -10,7 +11,7 @@
 
 ## Requirements
 
-1. PHP ^7.3
+1. PHP ^7.4
 1. `openssl` binary
 1. `ext-openssl`
 

@@ -60,6 +60,7 @@ final class P7MReader implements P7MReaderInterface
     {
         $tmpFolder   = $tmpFolder ?? \sys_get_temp_dir();
         $p7mFilename = \tempnam($tmpFolder, \time() . '.p7m_');
+        \assert(false !== $p7mFilename);
         \file_put_contents($p7mFilename, \base64_decode($p7mBase64Content, true));
 
         return self::decodeFromFile(new SplFileObject($p7mFilename), $tmpFolder);
