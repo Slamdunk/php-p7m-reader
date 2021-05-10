@@ -9,20 +9,11 @@ use Symfony\Component\Process\Process;
 
 final class P7MReader implements P7MReaderInterface
 {
-    /**
-     * @var SplFileObject
-     */
-    private $p7mFile;
+    private SplFileObject $p7mFile;
 
-    /**
-     * @var SplFileObject
-     */
-    private $contentFile;
+    private SplFileObject $contentFile;
 
-    /**
-     * @var SplFileObject
-     */
-    private $certFile;
+    private SplFileObject $certFile;
 
     private function __construct(SplFileObject $p7mFile, SplFileObject $contentFile, SplFileObject $certFile)
     {

@@ -3,6 +3,6 @@ tests/TestAssets/*.p7m
 tests/TestAssets/*.crt
 tests/TestAssets/*.xml
 vendor/
-.php_cs.cache
+.php-cs-fixer.cache
 .phpunit.result.cache
 composer.lock

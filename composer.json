@@ -12,14 +12,14 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "ext-openssl": "*",
-        "symfony/process": "^4.4 || ^5.2"
+        "symfony/process": "^5.2.7"
     },
     "require-dev": {
         "malukenho/mcbumpface": "^1.1.5",
-        "phpstan/phpstan": "^0.12.80",
-        "phpstan/phpstan-phpunit": "^0.12.17",
-        "phpunit/phpunit": "^9.5.2",
-        "slam/php-cs-fixer-extensions": "^2.2.0",
+        "phpstan/phpstan": "^0.12.86",
+        "phpstan/phpstan-phpunit": "^0.12.18",
+        "phpunit/phpunit": "^9.5.4",
+        "slam/php-cs-fixer-extensions": "^3.0.1",
         "slam/php-debug-r": "^1.7.0",
         "slam/phpstan-extensions": "^5.1.0"
     },
