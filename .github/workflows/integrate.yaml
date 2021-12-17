@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.0"
 
     steps:
       - name: "Checkout"
@@ -62,8 +62,8 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
           - "8.0"
+          - "8.1"
         dependencies:
           - "lowest"
           - "highest"
@@ -91,20 +91,12 @@ jobs:
           restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
 
       - name: "Install lowest dependencies"
-        if: ${{ matrix.dependencies == 'lowest' && matrix.php-version != '8.0' }}
+        if: ${{ matrix.dependencies == 'lowest' }}
         run: "composer update --no-interaction --no-progress --prefer-lowest"
 
       - name: "Install highest dependencies"
-        if: ${{ matrix.dependencies == 'highest' && matrix.php-version != '8.0' }}
+        if: ${{ matrix.dependencies == 'highest' }}
         run: "composer update --no-interaction --no-progress"
-
-      - name: "Install lowest dependencies PHP 8.0"
-        if: ${{ matrix.dependencies == 'lowest' && matrix.php-version == '8.0' }}
-        run: "composer update --no-interaction --no-progress --ignore-platform-reqs --prefer-lowest"
-
-      - name: "Install highest dependencies PHP 8.0"
-        if: ${{ matrix.dependencies == 'highest' && matrix.php-version == '8.0' }}
-        run: "composer update --no-interaction --no-progress --ignore-platform-reqs"
 
       - name: "Decrypt assets"
         run: |
@@ -126,7 +118,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.0"
 
     steps:
       - name: "Checkout"
@@ -180,7 +172,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.0"
 
     steps:
       - name: "Checkout"
@@ -217,7 +209,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "8.0"
 
     steps:
       - name: "Checkout"
