@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.1"
 
     steps:
       - name: "Checkout"
@@ -33,7 +33,7 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: "Cache dependencies"
-        uses: actions/cache@v2
+        uses: "actions/cache@v3"
         with:
           path: ${{ steps.composercache.outputs.dir }}
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
@@ -62,11 +62,12 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
-          - "8.1"
-        dependencies:
-          - "lowest"
-          - "highest"
+          - "8.2"
+        code-coverage:
+          - "none"
+        include:
+          - php-version: "8.1"
+            code-coverage: "pcov"
 
     steps:
       - name: "Checkout"
@@ -75,68 +76,16 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "none"
+          coverage: ${{ matrix.code-coverage }}
           php-version: "${{ matrix.php-version }}"
-          ini-values: zend.assertions=1
+          ini-values: zend.assertions=1,error_reporting=-1
 
       - name: "Get composer cache directory"
         id: composercache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: "Cache dependencies"
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-
-
-      - name: "Install lowest dependencies"
-        if: ${{ matrix.dependencies == 'lowest' }}
-        run: "composer update --no-interaction --no-progress --prefer-lowest"
-
-      - name: "Install highest dependencies"
-        if: ${{ matrix.dependencies == 'highest' }}
-        run: "composer update --no-interaction --no-progress"
-
-      - name: "Decrypt assets"
-        run: |
-          cd tests/
-          sh decrypt_assets.sh
-          cd ..
-        env:
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: "Run tests"
-        timeout-minutes: 3
-        run: "vendor/bin/phpunit --no-coverage --no-logging"
-
-  code-coverage:
-    name: "Code Coverage"
-
-    runs-on: "ubuntu-latest"
-
-    strategy:
-      matrix:
-        php-version:
-          - "8.0"
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "pcov"
-          php-version: "${{ matrix.php-version }}"
-          ini-values: zend.assertions=1
-
-      - name: "Get composer cache directory"
-        id: composercache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: "Cache dependencies"
-        uses: actions/cache@v2
+        uses: "actions/cache@v3"
         with:
           path: ${{ steps.composercache.outputs.dir }}
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
@@ -145,20 +94,19 @@ jobs:
       - name: "Install dependencies"
         run: "composer update --no-interaction --no-progress"
 
-      - name: "Decrypt assets"
-        run: |
-          cd tests/
-          sh decrypt_assets.sh
-          cd ..
-        env:
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: "Run tests"
+        if: ${{ matrix.code-coverage == 'none' }}
+        timeout-minutes: 3
+        run: "vendor/bin/phpunit --no-coverage"
 
       - name: "Run tests"
+        if: ${{ matrix.code-coverage != 'none' }}
         timeout-minutes: 3
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
 
       - name: "Send code coverage report to Codecov.io"
-        uses: codecov/codecov-action@v1
+        if: ${{ matrix.code-coverage != 'none' }}
+        uses: "codecov/codecov-action@v3"
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
@@ -172,7 +120,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.1"
 
     steps:
       - name: "Checkout"
@@ -189,7 +137,7 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: "Cache dependencies"
-        uses: actions/cache@v2
+        uses: "actions/cache@v3"
         with:
           path: ${{ steps.composercache.outputs.dir }}
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
@@ -209,7 +157,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.1"
 
     steps:
       - name: "Checkout"
@@ -220,14 +168,13 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          tools: cs2pr
 
       - name: "Get composer cache directory"
         id: composercache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: "Cache dependencies"
-        uses: actions/cache@v2
+        uses: "actions/cache@v3"
         with:
           path: ${{ steps.composercache.outputs.dir }}
           key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.dependencies }}-composer-${{ hashFiles('**/composer.json') }}
@@ -237,4 +184,4 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Run static analysis"
-        run: "vendor/bin/phpstan analyse --no-progress --error-format=checkstyle | cs2pr"
+        run: "vendor/bin/phpstan analyse --no-progress --error-format=github"

@@ -52,15 +52,10 @@ final class P7MReaderTest extends TestCase
     public function provideOkCases(): array
     {
         return [
-            'OK.xml.p7m' => [
-                new SplFileObject(__DIR__ . '/TestAssets/OK.xml.p7m'),
-                new SplFileObject(__DIR__ . '/TestAssets/OK.xml'),
+            'OK.txt.p7m'  => [
+                new SplFileObject(__DIR__ . '/TestAssets/OK.txt.p7m'),
+                new SplFileObject(__DIR__ . '/TestAssets/OK.txt'),
                 new SplFileObject(__DIR__ . '/TestAssets/OK.crt'),
-            ],
-            'OK2.xml.p7m' => [
-                new SplFileObject(__DIR__ . '/TestAssets/OK2.xml.p7m'),
-                new SplFileObject(__DIR__ . '/TestAssets/OK2.xml'),
-                new SplFileObject(__DIR__ . '/TestAssets/OK2.crt'),
             ],
         ];
     }
@@ -75,7 +70,7 @@ final class P7MReaderTest extends TestCase
 
     public function testTamperedSample(): void
     {
-        $tamperedFile = new SplFileObject(__DIR__ . '/TestAssets/TAMPERED.xml.p7m');
+        $tamperedFile = new SplFileObject(__DIR__ . '/TestAssets/TAMPERED.txt.p7m');
 
         $this->expectException(P7MReaderException::class);
         $this->expectExceptionMessage('asn1');
