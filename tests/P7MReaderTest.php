@@ -52,7 +52,7 @@ final class P7MReaderTest extends TestCase
     public function provideOkCases(): array
     {
         return [
-            'OK.xml.p7m' => [
+            'OK.xml.p7m'  => [
                 new SplFileObject(__DIR__ . '/TestAssets/OK.xml.p7m'),
                 new SplFileObject(__DIR__ . '/TestAssets/OK.xml'),
                 new SplFileObject(__DIR__ . '/TestAssets/OK.crt'),

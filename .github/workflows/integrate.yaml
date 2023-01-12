@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.2"
 
     steps:
       - name: "Checkout"
@@ -64,6 +64,7 @@ jobs:
         php-version:
           - "8.0"
           - "8.1"
+          - "8.2"
         dependencies:
           - "lowest"
           - "highest"
@@ -118,7 +119,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.2"
 
     steps:
       - name: "Checkout"
@@ -172,7 +173,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.2"
 
     steps:
       - name: "Checkout"
@@ -199,7 +200,7 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Check coding standards"
-        run: "vendor/bin/php-cs-fixer fix --verbose --dry-run --diff"
+        run: "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --verbose --dry-run --diff"
 
   static-analysis:
     name: "Static Analysis"
@@ -209,7 +210,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.0"
+          - "8.2"
 
     steps:
       - name: "Checkout"
