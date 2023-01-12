@@ -11,7 +11,6 @@
 
 ## Requirements
 
-1. PHP ^7.4
 1. `openssl` binary
 1. `ext-openssl`
 
