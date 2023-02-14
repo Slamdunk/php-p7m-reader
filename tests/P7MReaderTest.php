@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace Slam\P7MReader\Tests;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Slam\P7MReader\P7MReader;
 use Slam\P7MReader\P7MReaderException;
 use SplFileObject;
 
-/**
- * @covers \Slam\P7MReader\P7MReader
- * @covers \Slam\P7MReader\P7MReaderException
- */
+#[CoversClass(P7MReader::class)]
+#[CoversClass(P7MReaderException::class)]
 final class P7MReaderTest extends TestCase
 {
-    /**
-     * @dataProvider provideOkCases
-     */
+    #[DataProvider('provideOkCases')]
     public function testWorkingSample(SplFileObject $referenceP7m, SplFileObject $referenceXmlOutput, SplFileObject $referenceCrtOutput): void
     {
         $p7mToWorkOn = $this->prepareP7mToWorkOn($referenceP7m);
@@ -29,9 +27,7 @@ final class P7MReaderTest extends TestCase
         self::assertArrayHasKey('subject', $p7mReader->getCertData());
     }
 
-    /**
-     * @dataProvider provideOkCases
-     */
+    #[DataProvider('provideOkCases')]
     public function testDecodingFromString(SplFileObject $referenceP7m, SplFileObject $referenceXmlOutput, SplFileObject $referenceCrtOutput): void
     {
         $p7mToWorkOn      = $this->prepareP7mToWorkOn($referenceP7m);
@@ -49,7 +45,7 @@ final class P7MReaderTest extends TestCase
     /**
      * @return SplFileObject[][]
      */
-    public function provideOkCases(): array
+    public static function provideOkCases(): array
     {
         return [
             'OK.txt.p7m'  => [

@@ -1,4 +1,5 @@
-PHP_BIN=php8.2
+CSFIX_PHP_BIN=PHP_CS_FIXER_IGNORE_ENV=1 php8.2
+PHP_BIN=php8.2 -d zend.assertions=1
 COMPOSER_BIN=$(shell command -v composer)
 
 all: csfix static-analysis test
@@ -11,12 +12,12 @@ vendor: composer.json
 
 .PHONY: csfix
 csfix: vendor
-	PHP_CS_FIXER_IGNORE_ENV=1 $(PHP_BIN) vendor/bin/php-cs-fixer fix --verbose
+	$(CSFIX_PHP_BIN) vendor/bin/php-cs-fixer fix -v
 
 .PHONY: static-analysis
 static-analysis: vendor
-	$(PHP_BIN) vendor/bin/phpstan analyse
+	$(PHP_BIN) vendor/bin/phpstan analyse $(PHPSTAN_ARGS)
 
 .PHONY: test
 test: vendor
-	$(PHP_BIN) -d zend.assertions=1 vendor/bin/phpunit
+	$(PHP_BIN) vendor/bin/phpunit $(PHPUNIT_ARGS)
