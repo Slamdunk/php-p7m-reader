@@ -42,9 +42,7 @@ final class P7MReaderTest extends TestCase
         self::assertArrayHasKey('subject', $p7mReader->getCertData());
     }
 
-    /**
-     * @return SplFileObject[][]
-     */
+    /** @return SplFileObject[][] */
     public static function provideOkCases(): array
     {
         return [

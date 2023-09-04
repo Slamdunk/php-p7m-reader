@@ -22,9 +22,7 @@ final class P7MReader implements P7MReaderInterface
         $this->certFile    = $certFile;
     }
 
-    /**
-     * @throws P7MReaderException
-     */
+    /** @throws P7MReaderException */
     public static function decodeFromFile(SplFileObject $p7m, ?string $tmpFolder = null): P7MReaderInterface
     {
         $tmpFolder ??= \sys_get_temp_dir();
@@ -44,9 +42,7 @@ final class P7MReader implements P7MReaderInterface
         return new self($p7m, new SplFileObject($contentFilename), new SplFileObject($crtFilename));
     }
 
-    /**
-     * @throws P7MReaderException
-     */
+    /** @throws P7MReaderException */
     public static function decodeFromBase64(string $p7mBase64Content, ?string $tmpFolder = null): P7MReaderInterface
     {
         $tmpFolder ??= \sys_get_temp_dir();
@@ -57,9 +53,7 @@ final class P7MReader implements P7MReaderInterface
         return self::decodeFromFile(new SplFileObject($p7mFilename), $tmpFolder);
     }
 
-    /**
-     * @param string[] $command
-     */
+    /** @param string[] $command */
     private static function exec(array $command): string
     {
         $process = new Process($command);
@@ -86,9 +80,7 @@ final class P7MReader implements P7MReaderInterface
         return $this->certFile;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function getCertData(): array
     {
         return (array) \openssl_x509_parse((string) \file_get_contents($this->certFile->getPathname()));

@@ -14,8 +14,6 @@ interface P7MReaderInterface
 
     public function getCertFile(): SplFileObject;
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function getCertData(): array;
 }
