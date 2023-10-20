@@ -6,6 +6,4 @@ namespace Slam\P7MReader;
 
 use RuntimeException;
 
-final class P7MReaderException extends RuntimeException
-{
-}
+final class P7MReaderException extends RuntimeException {}
