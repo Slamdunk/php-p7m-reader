@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.2"
+          - "8.3"
 
     steps:
       - uses: "actions/checkout@v4"
@@ -27,7 +27,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
           tools: composer-normalize,composer-require-checker,composer-unused
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
 
       - run: "composer validate --strict"
       - run: "composer-normalize --dry-run"
@@ -40,11 +40,11 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.3"
+          - "8.4"
         code-coverage:
           - "none"
         include:
-          - php-version: "8.2"
+          - php-version: "8.3"
             code-coverage: "pcov"
 
     steps:
@@ -54,7 +54,7 @@ jobs:
           coverage: "${{ matrix.code-coverage }}"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
 
       - run: "vendor/bin/phpunit --no-coverage"
         if: ${{ matrix.code-coverage == 'none' }}
@@ -78,7 +78,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.2"
+          - "8.3"
 
     steps:
       - uses: "actions/checkout@v4"
@@ -87,7 +87,7 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
 
       - run: "vendor/bin/php-cs-fixer fix --verbose --dry-run --diff"
 
@@ -99,7 +99,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.2"
+          - "8.3"
 
     steps:
       - uses: "actions/checkout@v4"
@@ -108,6 +108,6 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
           ini-values: "${{ env.INI_VALUES }}"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
 
       - run: "vendor/bin/phpstan analyse --no-progress --error-format=github"
