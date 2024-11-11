@@ -10,9 +10,7 @@ use Symfony\Component\Process\Process;
 final class P7MReader implements P7MReaderInterface
 {
     private SplFileObject $p7mFile;
-
     private SplFileObject $contentFile;
-
     private SplFileObject $certFile;
 
     private function __construct(SplFileObject $p7mFile, SplFileObject $contentFile, SplFileObject $certFile)
@@ -34,7 +32,7 @@ final class P7MReader implements P7MReaderInterface
         \assert(false !== $crtFilename);
 
         $opensslBinary = \trim(self::exec(['which', 'openssl']));
-        \assert(\is_string($opensslBinary) && isset($opensslBinary[0]));
+        \assert(isset($opensslBinary[0]));
 
         self::exec([$opensslBinary, 'pkcs7', '-inform', 'DER', '-in', $p7m->getPathname(), '-print_certs', '-out', $crtFilename]);
         self::exec([$opensslBinary, 'cms', '-verify', '-in', $p7m->getPathname(), '-inform', 'DER', '-noverify', '-signer', $crtFilename, '-out', $contentFilename, '-no_attr_verify']);

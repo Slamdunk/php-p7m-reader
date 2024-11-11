@@ -1,9 +1,10 @@
 includes:
-    - phar://phpstan.phar/conf/config.levelmax.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/slam/phpstan-extensions/conf/slam-rules.neon
+    - phpstan-baseline.neon
 
 parameters:
+    level: max
     paths:
         - lib/
         - tests/
