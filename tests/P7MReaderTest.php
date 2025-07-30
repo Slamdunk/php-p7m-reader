@@ -43,7 +43,7 @@ final class P7MReaderTest extends TestCase
     }
 
     /** @return SplFileObject[][] */
-    public static function provideOkCases(): array
+    public static function provideOkCases(): iterable
     {
         return [
             'OK.txt.p7m'  => [
