@@ -3,7 +3,6 @@
 [![Latest Stable Version](https://img.shields.io/packagist/v/slam/php-p7m-reader.svg)](https://packagist.org/packages/slam/php-p7m-reader)
 [![Downloads](https://img.shields.io/packagist/dt/slam/php-p7m-reader.svg)](https://packagist.org/packages/slam/php-p7m-reader)
 [![Integrate](https://github.com/Slamdunk/php-p7m-reader/workflows/CI/badge.svg)](https://github.com/Slamdunk/php-p7m-reader/actions)
-[![Code Coverage](https://codecov.io/gh/Slamdunk/php-p7m-reader/coverage.svg)](https://codecov.io/gh/Slamdunk/php-p7m-reader)
 
 ## Installation
 
